@@ -18,9 +18,6 @@ class MapViewController: UIViewController, MKMapViewDelegate, UIGestureRecognize
         mapView.delegate = self
         
         let tapGesture = UILongPressGestureRecognizer(target: self, action: #selector(MapViewController.mapTapped(gestureReconizer:)))
-//        tapGesture.numberOfTapsRequired = 1
-//        tapGesture.numberOfTouchesRequired = 1
-        
         tapGesture.delegate = self
         mapView.addGestureRecognizer(tapGesture)
     }
@@ -28,6 +25,9 @@ class MapViewController: UIViewController, MKMapViewDelegate, UIGestureRecognize
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: animated)
+        if let region_array = UserDefaults.standard.value(forKey: Constants.MAP_REGION) as? [Double] {
+            mapView.setRegion(MKCoordinateRegion.deserialize(region_array), animated:  true)
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -36,7 +36,6 @@ class MapViewController: UIViewController, MKMapViewDelegate, UIGestureRecognize
     }
     
     @objc func mapTapped(gestureReconizer: UILongPressGestureRecognizer) {
-        
         let location = gestureReconizer.location(in: mapView)
         let coordinate = mapView.convert(location,toCoordinateFrom: mapView)
         
@@ -50,7 +49,6 @@ class MapViewController: UIViewController, MKMapViewDelegate, UIGestureRecognize
         let reuseId = "pin"
         
         var pinView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseId) as? MKPinAnnotationView
-        
         if pinView == nil {
             pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
             pinView!.canShowCallout = true
@@ -69,5 +67,18 @@ class MapViewController: UIViewController, MKMapViewDelegate, UIGestureRecognize
         photoCollectionVC.coordinate = view.annotation?.coordinate
         self.navigationController?.pushViewController(photoCollectionVC, animated: true)
     }
+    
+    func mapViewDidChangeVisibleRegion(_ mapView: MKMapView) {
+        UserDefaults.standard.set(mapView.region.serialize(), forKey: Constants.MAP_REGION)
+    }
 }
 
+extension MKCoordinateRegion {
+    func serialize() -> [Double] {
+        return [center.latitude, center.longitude, span.latitudeDelta, span.longitudeDelta]
+    }
+    
+    static func deserialize(_ params: [Double] ) -> MKCoordinateRegion {
+        return MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: params[0], longitude: params[1]), span:  MKCoordinateSpan(latitudeDelta: params[2], longitudeDelta: params[3]))
+    }
+}

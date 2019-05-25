@@ -13,6 +13,7 @@
 		443100BA2289893500AD3332 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 443100B92289893500AD3332 /* Assets.xcassets */; };
 		443100BD2289893500AD3332 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 443100BB2289893500AD3332 /* LaunchScreen.storyboard */; };
 		445DF28C229887A600D627C5 /* PhotoCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 445DF28B229887A600D627C5 /* PhotoCollectionViewController.swift */; };
+		445DF28E22988F6F00D627C5 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 445DF28D22988F6F00D627C5 /* Constants.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +25,7 @@
 		443100BC2289893500AD3332 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		443100BE2289893500AD3332 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		445DF28B229887A600D627C5 /* PhotoCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCollectionViewController.swift; sourceTree = "<group>"; };
+		445DF28D22988F6F00D627C5 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +65,7 @@
 				443100BE2289893500AD3332 /* Info.plist */,
 				443100B42289893300AD3332 /* MapViewController.swift */,
 				445DF28B229887A600D627C5 /* PhotoCollectionViewController.swift */,
+				445DF28D22988F6F00D627C5 /* Constants.swift */,
 			);
 			path = "Virtual Tourist";
 			sourceTree = "<group>";
@@ -141,6 +144,7 @@
 				443100B52289893300AD3332 /* MapViewController.swift in Sources */,
 				445DF28C229887A600D627C5 /* PhotoCollectionViewController.swift in Sources */,
 				443100B32289893300AD3332 /* AppDelegate.swift in Sources */,
+				445DF28E22988F6F00D627C5 /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
