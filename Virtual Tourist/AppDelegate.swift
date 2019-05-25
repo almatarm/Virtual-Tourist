@@ -19,14 +19,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
 
-    func applicationWillTerminate(_ application: UIApplication) {
-        print("Application Will Terminate")
-        
-    }
-    
-    func applicationDidEnterBackground(_ application: UIApplication) {
-        print("Applcion entered background")
-    }
     func checkIfFirstLaunch() {
         let appHasLaunchedBefore = UserDefaults.standard.bool(forKey: Constants.FIRST_LAUNCH)
         if !appHasLaunchedBefore {

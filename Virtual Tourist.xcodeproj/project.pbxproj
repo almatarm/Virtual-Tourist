@@ -14,6 +14,7 @@
 		443100BD2289893500AD3332 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 443100BB2289893500AD3332 /* LaunchScreen.storyboard */; };
 		445DF28C229887A600D627C5 /* PhotoCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 445DF28B229887A600D627C5 /* PhotoCollectionViewController.swift */; };
 		445DF28E22988F6F00D627C5 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 445DF28D22988F6F00D627C5 /* Constants.swift */; };
+		445DF2992299476700D627C5 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 445DF2982299476700D627C5 /* Extensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,7 @@
 		443100BE2289893500AD3332 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		445DF28B229887A600D627C5 /* PhotoCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCollectionViewController.swift; sourceTree = "<group>"; };
 		445DF28D22988F6F00D627C5 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		445DF2982299476700D627C5 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,15 +61,73 @@
 			isa = PBXGroup;
 			children = (
 				443100B22289893300AD3332 /* AppDelegate.swift */,
-				443100B62289893300AD3332 /* Main.storyboard */,
-				443100B92289893500AD3332 /* Assets.xcassets */,
-				443100BB2289893500AD3332 /* LaunchScreen.storyboard */,
 				443100BE2289893500AD3332 /* Info.plist */,
-				443100B42289893300AD3332 /* MapViewController.swift */,
-				445DF28B229887A600D627C5 /* PhotoCollectionViewController.swift */,
-				445DF28D22988F6F00D627C5 /* Constants.swift */,
+				445DF29522993AAE00D627C5 /* Model */,
+				445DF29422993AA900D627C5 /* View Controllers */,
+				445DF29322993AA600D627C5 /* Views */,
+				445DF29122993A9A00D627C5 /* Assets */,
+				445DF29222993A9D00D627C5 /* StoryBoards */,
+				445DF29722993B5D00D627C5 /* Utilities */,
 			);
 			path = "Virtual Tourist";
+			sourceTree = "<group>";
+		};
+		445DF29122993A9A00D627C5 /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				443100B92289893500AD3332 /* Assets.xcassets */,
+			);
+			path = Assets;
+			sourceTree = "<group>";
+		};
+		445DF29222993A9D00D627C5 /* StoryBoards */ = {
+			isa = PBXGroup;
+			children = (
+				443100B62289893300AD3332 /* Main.storyboard */,
+				443100BB2289893500AD3332 /* LaunchScreen.storyboard */,
+			);
+			name = StoryBoards;
+			path = ../StoryBoards;
+			sourceTree = "<group>";
+		};
+		445DF29322993AA600D627C5 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		445DF29422993AA900D627C5 /* View Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				443100B42289893300AD3332 /* MapViewController.swift */,
+				445DF28B229887A600D627C5 /* PhotoCollectionViewController.swift */,
+			);
+			path = "View Controllers";
+			sourceTree = "<group>";
+		};
+		445DF29522993AAE00D627C5 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				445DF29622993AF300D627C5 /* Managed Object Extensions */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		445DF29622993AF300D627C5 /* Managed Object Extensions */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = "Managed Object Extensions";
+			sourceTree = "<group>";
+		};
+		445DF29722993B5D00D627C5 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				445DF28D22988F6F00D627C5 /* Constants.swift */,
+				445DF2982299476700D627C5 /* Extensions.swift */,
+			);
+			path = Utilities;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -141,6 +201,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				445DF2992299476700D627C5 /* Extensions.swift in Sources */,
 				443100B52289893300AD3332 /* MapViewController.swift in Sources */,
 				445DF28C229887A600D627C5 /* PhotoCollectionViewController.swift in Sources */,
 				443100B32289893300AD3332 /* AppDelegate.swift in Sources */,

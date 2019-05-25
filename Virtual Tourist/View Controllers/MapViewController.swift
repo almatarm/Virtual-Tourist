@@ -9,10 +9,14 @@
 import UIKit
 import MapKit
 
-class MapViewController: UIViewController, MKMapViewDelegate, UIGestureRecognizerDelegate {
+class MapViewController: UIViewController, UIGestureRecognizerDelegate {
     
+    //MARK: Outlets
     @IBOutlet weak var mapView: MKMapView!
     
+    //MARK: Variables/Constants
+    
+    //MARK: Lifecycle methods
     override func viewDidLoad() {
         super.viewDidLoad()
         mapView.delegate = self
@@ -35,6 +39,9 @@ class MapViewController: UIViewController, MKMapViewDelegate, UIGestureRecognize
         navigationController?.setNavigationBarHidden(false, animated: animated)
     }
     
+    //MARK: Private methods
+    
+    //MARK: Delegate methods
     @objc func mapTapped(gestureReconizer: UILongPressGestureRecognizer) {
         let location = gestureReconizer.location(in: mapView)
         let coordinate = mapView.convert(location,toCoordinateFrom: mapView)
@@ -44,7 +51,10 @@ class MapViewController: UIViewController, MKMapViewDelegate, UIGestureRecognize
         annotation.coordinate = coordinate
         mapView.addAnnotation(annotation)
     }
+}
 
+//MARK: Extensions - MapView Delegate
+extension MapViewController: MKMapViewDelegate {
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         let reuseId = "pin"
         
@@ -61,7 +71,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, UIGestureRecognize
         
         return pinView
     }
-
+    
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
         let photoCollectionVC = self.storyboard?.instantiateViewController(withIdentifier: "PhotoCollectionViewController") as! PhotoCollectionViewController
         photoCollectionVC.coordinate = view.annotation?.coordinate
@@ -73,12 +83,3 @@ class MapViewController: UIViewController, MKMapViewDelegate, UIGestureRecognize
     }
 }
 
-extension MKCoordinateRegion {
-    func serialize() -> [Double] {
-        return [center.latitude, center.longitude, span.latitudeDelta, span.longitudeDelta]
-    }
-    
-    static func deserialize(_ params: [Double] ) -> MKCoordinateRegion {
-        return MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: params[0], longitude: params[1]), span:  MKCoordinateSpan(latitudeDelta: params[2], longitudeDelta: params[3]))
-    }
-}
