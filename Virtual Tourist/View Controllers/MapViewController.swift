@@ -8,6 +8,7 @@
 
 import UIKit
 import MapKit
+import CoreData
 
 class MapViewController: UIViewController, UIGestureRecognizerDelegate {
     
@@ -15,7 +16,9 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate {
     @IBOutlet weak var mapView: MKMapView!
     
     //MARK: Variables/Constants
-    
+    var dataController:DataController!
+    var pins: [Pin] = []
+
     //MARK: Lifecycle methods
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,6 +27,21 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate {
         let tapGesture = UILongPressGestureRecognizer(target: self, action: #selector(MapViewController.mapTapped(gestureReconizer:)))
         tapGesture.delegate = self
         mapView.addGestureRecognizer(tapGesture)
+        
+        let pinFetchRequest:NSFetchRequest<Pin> = Pin.fetchRequest()
+        do {
+            self.pins = try dataController.managedObjectContext.fetch(pinFetchRequest)
+            refresh()
+        } catch {
+            print("\(error)")
+        }
+    }
+    
+    func refresh() {
+        for pin in pins {
+            print(pin)
+            addAnnotation(coordinate: CLLocationCoordinate2D(latitude: pin.latitude, longitude:  pin.longitude))
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -46,10 +64,22 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate {
         let location = gestureReconizer.location(in: mapView)
         let coordinate = mapView.convert(location,toCoordinateFrom: mapView)
         
+        addAnnotation(coordinate: coordinate)
+        addPin(coordinate: coordinate)
+    }
+    
+    func addAnnotation(coordinate: CLLocationCoordinate2D) {
         // Add annotation:
         let annotation = MKPointAnnotation()
         annotation.coordinate = coordinate
         mapView.addAnnotation(annotation)
+    }
+    
+    func addPin(coordinate: CLLocationCoordinate2D) {
+        let pin = Pin(context: dataController.viewContext)
+        pin.latitude = coordinate.latitude
+        pin.longitude  = coordinate.longitude
+        try? dataController.viewContext.save()
     }
 }
 
@@ -82,4 +112,3 @@ extension MapViewController: MKMapViewDelegate {
         UserDefaults.standard.set(mapView.region.serialize(), forKey: Constants.MAP_REGION)
     }
 }
-
