@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		44054888229FD92D0046F06A /* WebAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44054887229FD92D0046F06A /* WebAPIClient.swift */; };
+		4405488A229FDBBB0046F06A /* FlickrClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44054889229FDBBB0046F06A /* FlickrClient.swift */; };
+		4405488C229FDDDA0046F06A /* FlickrErrorResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4405488B229FDDDA0046F06A /* FlickrErrorResponse.swift */; };
+		4405488F229FDFB40046F06A /* FlickrSearchResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4405488E229FDFB40046F06A /* FlickrSearchResponse.swift */; };
 		443100B32289893300AD3332 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 443100B22289893300AD3332 /* AppDelegate.swift */; };
 		443100B52289893300AD3332 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 443100B42289893300AD3332 /* MapViewController.swift */; };
 		443100B82289893300AD3332 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 443100B62289893300AD3332 /* Main.storyboard */; };
@@ -20,6 +24,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		44054887229FD92D0046F06A /* WebAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAPIClient.swift; sourceTree = "<group>"; };
+		44054889229FDBBB0046F06A /* FlickrClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlickrClient.swift; sourceTree = "<group>"; };
+		4405488B229FDDDA0046F06A /* FlickrErrorResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlickrErrorResponse.swift; sourceTree = "<group>"; };
+		4405488E229FDFB40046F06A /* FlickrSearchResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlickrSearchResponse.swift; sourceTree = "<group>"; };
 		443100AF2289893300AD3332 /* Virtual Tourist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Virtual Tourist.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		443100B22289893300AD3332 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		443100B42289893300AD3332 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
@@ -45,6 +53,25 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		44054886229FD8FF0046F06A /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				4405488D229FDF880046F06A /* Response */,
+				44054887229FD92D0046F06A /* WebAPIClient.swift */,
+				44054889229FDBBB0046F06A /* FlickrClient.swift */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
+		4405488D229FDF880046F06A /* Response */ = {
+			isa = PBXGroup;
+			children = (
+				4405488B229FDDDA0046F06A /* FlickrErrorResponse.swift */,
+				4405488E229FDFB40046F06A /* FlickrSearchResponse.swift */,
+			);
+			path = Response;
+			sourceTree = "<group>";
+		};
 		443100A62289893300AD3332 = {
 			isa = PBXGroup;
 			children = (
@@ -113,6 +140,7 @@
 		445DF29522993AAE00D627C5 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				44054886229FD8FF0046F06A /* Network */,
 				445DF29622993AF300D627C5 /* Managed Object Extensions */,
 				445DF29A22994A8C00D627C5 /* Model.xcdatamodeld */,
 				445DF29D22994B3900D627C5 /* DataController.swift */,
@@ -211,9 +239,13 @@
 				445DF2992299476700D627C5 /* Extensions.swift in Sources */,
 				443100B52289893300AD3332 /* MapViewController.swift in Sources */,
 				445DF28C229887A600D627C5 /* PhotoCollectionViewController.swift in Sources */,
+				44054888229FD92D0046F06A /* WebAPIClient.swift in Sources */,
 				443100B32289893300AD3332 /* AppDelegate.swift in Sources */,
+				4405488F229FDFB40046F06A /* FlickrSearchResponse.swift in Sources */,
+				4405488C229FDDDA0046F06A /* FlickrErrorResponse.swift in Sources */,
 				445DF28E22988F6F00D627C5 /* Constants.swift in Sources */,
 				445DF29C22994A8C00D627C5 /* Model.xcdatamodeld in Sources */,
+				4405488A229FDBBB0046F06A /* FlickrClient.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

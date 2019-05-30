@@ -22,6 +22,10 @@ class PhotoCollectionViewController: UIViewController {
         super.viewDidLoad()
         
         setupMapView()
+        
+        FlickrClient.search(lat: coordinate.latitude, lon: coordinate.longitude) { photos, error in
+           
+        }
     }
 		
     //MARK: Private methods

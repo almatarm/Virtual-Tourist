@@ -39,7 +39,6 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate {
     
     func refresh() {
         for pin in pins {
-            print(pin)
             addAnnotation(coordinate: CLLocationCoordinate2D(latitude: pin.latitude, longitude:  pin.longitude))
         }
     }
