@@ -10,10 +10,30 @@ import UIKit
 import MapKit
 
 class PhotoCollectionViewController: UIViewController {
+    
+    //MARK: Outlets
+    @IBOutlet weak var mapView: MKMapView!
+    
+    //MARK: Variables/Constantsv
     var coordinate: CLLocationCoordinate2D!
     
+    //MARK: Lifecycle methods
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        setupMapView()
     }
 		
+    //MARK: Private methods
+    fileprivate func setupMapView() {
+        let region = MKCoordinateRegion(center: coordinate, latitudinalMeters: CLLocationDistance(exactly: 7500)!, longitudinalMeters: CLLocationDistance(exactly: 7500)!)
+        mapView.setRegion(mapView.regionThatFits(region), animated: false)
+        let annotation = MKPointAnnotation()
+        annotation.coordinate = coordinate
+        mapView.addAnnotation(annotation)
+    }
+    
+    //MARK: Delegate methods
 }
+
+//MARK: Extensions
