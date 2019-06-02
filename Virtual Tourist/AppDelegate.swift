@@ -26,6 +26,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
     
+    func applicationDidEnterBackground(_ application: UIApplication) {
+        persistData()
+    }
+    
     func applicationWillTerminate(_ application: UIApplication) {
         persistData()
     }

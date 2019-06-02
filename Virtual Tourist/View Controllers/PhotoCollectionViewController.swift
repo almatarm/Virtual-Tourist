@@ -8,18 +8,26 @@
 
 import UIKit
 import MapKit
+import CoreData
 
 class PhotoCollectionViewController: UIViewController {
 
     //MARK: Outlets
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var noImageLabel: UILabel!
     @IBOutlet weak var flowLayout: UICollectionViewFlowLayout!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    @IBOutlet weak var newCollection: UIBarButtonItem!
     
     //MARK: Variables/Constants
-    var coordinate: CLLocationCoordinate2D!
-    var photos: [URL] = []
-    
+    var pin: Pin!
+    var fetchResultsController:NSFetchedResultsController<Photo>!
+    var pageNumber = 1
+    var viewContext: NSManagedObjectContext!
+    var pinHasPhotos: Bool {
+        return (fetchResultsController.fetchedObjects?.count ?? 0) > 0
+    }
     
     //MARK: Lifecycle methods
     override func viewDidLoad() {
@@ -28,18 +36,18 @@ class PhotoCollectionViewController: UIViewController {
         collectionView.delegate = self
         
         setupMapView()
-        FlickrClient.search(lat: coordinate.latitude, lon: coordinate.longitude) { photos, error in
-            for photo in photos {
-                self.photos.append(photo)
-            }
-            print(self.photos)
-            self.collectionView.reloadData()
-        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setupFlowLayout()
+        updatingUI(loading: true)
+        setupFetchResultsController()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        fetchResultsController = nil
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -50,10 +58,10 @@ class PhotoCollectionViewController: UIViewController {
 		
     //MARK: Private methods
     fileprivate func setupMapView() {
-        let region = MKCoordinateRegion(center: coordinate, latitudinalMeters: CLLocationDistance(exactly: 7500)!, longitudinalMeters: CLLocationDistance(exactly: 7500)!)
+        let region = MKCoordinateRegion(center: pin.coordinate, latitudinalMeters: CLLocationDistance(exactly: 7500)!, longitudinalMeters: CLLocationDistance(exactly: 7500)!)
         mapView.setRegion(mapView.regionThatFits(region), animated: false)
         let annotation = MKPointAnnotation()
-        annotation.coordinate = coordinate
+        annotation.coordinate = pin.coordinate
         mapView.addAnnotation(annotation)
     }
     
@@ -71,16 +79,61 @@ class PhotoCollectionViewController: UIViewController {
     }
     
     @IBAction func newCollection(_ sender: Any) {
-        FlickrClient.search(lat: coordinate.latitude, lon: coordinate.longitude) { photos, error in
-            self.photos.removeAll()
-            for photo in photos {
-                self.photos.append(photo)
-            }
-            print(self.photos)
-            self.collectionView.reloadData()
+//        FlickrClient.search(lat: pin.latitude, lon: pin.longitude) { photos, error in
+//            self.photos.removeAll()
+//            for photo in photos {
+//                self.photos.append(photo)
+//            }
+//            print(self.photos)
+//            self.collectionView.reloadData()
+//        }
+    }
+    
+    func fetchNewCollection() {
+        updatingUI(loading: true)
+        
+        
+        updatingUI(loading: false)
+    }
+
+    func updatingUI(loading: Bool) {
+        newCollection.isEnabled = loading == false
+        
+        if loading {
+            activityIndicator.startAnimating()
+        } else {
+            activityIndicator.stopAnimating()
         }
     }
     
+    fileprivate func setupFetchResultsController() {
+        let fetchRequest: NSFetchRequest<Photo> = Photo.fetchRequest()
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending:  false)]
+        fetchRequest.predicate = NSPredicate(format: "pin == %@", pin)
+        
+        fetchResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: viewContext, sectionNameKeyPath: nil, cacheName: nil)
+        fetchResultsController.delegate = self
+        do {
+            try fetchResultsController.performFetch()
+            if !pinHasPhotos {
+                // Get Photos form flicker
+                FlickrClient.search(lat: pin.latitude, lon: pin.longitude, page: pageNumber) { urls, error in
+                    for url in urls {
+                        let photo = Photo(context: self.viewContext)
+                        photo.link = url
+                        photo.pin = self.pin
+                    }
+                    try? self.viewContext.save()
+                    self.pageNumber += 1
+                    self.collectionView.reloadData()
+                }
+            }
+        } catch {
+            fatalError("Could not fetch photos from local store: \(error.localizedDescription)")
+        }
+        
+        updatingUI(loading: false)
+    }
     
     //MARK: Delegate methods
 }
@@ -89,30 +142,30 @@ class PhotoCollectionViewController: UIViewController {
 extension PhotoCollectionViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     static let CellIdentifier = "PhotoCollectionCellIdentifier"
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return photos.count
+        return fetchResultsController.fetchedObjects?.count ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoCollectionViewController.CellIdentifier, for: indexPath) as! PhotoCollectionViewCell
         
-        let photo = photos[indexPath.row]
-        downloadImage(from: photo, imageView: cell.photo)
+        let photo = fetchResultsController.object(at: indexPath)
+        cell.photo.setPhoto(newPhoto: photo)
         return cell
     }
     
-    func getData(from url: URL, completion: @escaping (Data?, URLResponse?, Error?) -> ()) {
-        URLSession.shared.dataTask(with: url, completionHandler: completion).resume()
-    }
     
-    func downloadImage(from url: URL, imageView: UIImageView) {
-        print("Download Started")
-        getData(from: url) { data, response, error in
-            guard let data = data, error == nil else { return }
-            print(response?.suggestedFilename ?? url.lastPathComponent)
-            print("Download Finished")
-            DispatchQueue.main.async() {
-                imageView.image = UIImage(data: data)
+}
+
+extension PhotoCollectionViewController : NSFetchedResultsControllerDelegate {
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+        
+        switch(type) {
+        case .insert:
+            if let indexPath = indexPath {
+                collectionView.insertItems(at: [indexPath])
             }
+        default:
+            break
         }
     }
 }

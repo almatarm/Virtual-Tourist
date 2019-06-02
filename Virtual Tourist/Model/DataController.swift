@@ -10,10 +10,6 @@ import Foundation
 import CoreData
 
 class DataController {
-    var managedObjectContext: NSManagedObjectContext {
-        return persistentContainer.viewContext
-    }
-    
     let persistentContainer:NSPersistentContainer
     
     var viewContext:NSManagedObjectContext {

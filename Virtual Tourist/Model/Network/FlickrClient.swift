@@ -18,12 +18,12 @@ class FlickrClient {
     enum EndPoints {
         static let base = "https://www.flickr.com/services/rest/?"
         
-        case flickrPhotosSearch(Double, Double)
+        case flickrPhotosSearch(Double, Double, Int)
         
         var urlString : String {
             switch self {
-            case .flickrPhotosSearch(let lat, let lon):
-                return "\(EndPoints.base)method=flickr.photos.search&api_key=\(Auth.key)&lat=\(lat)&lon=\(lon)&format=json&nojsoncallback=1&per_page=15"
+            case .flickrPhotosSearch(let lat, let lon, let page):
+                return "\(EndPoints.base)method=flickr.photos.search&api_key=\(Auth.key)&lat=\(lat)&lon=\(lon)&format=json&nojsoncallback=1&per_page=3&page=\(page)"
             }
         }
         
@@ -55,7 +55,11 @@ class FlickrClient {
     }
     
     class func search(lat: Double, lon: Double, completion: @escaping ([URL], Error?) -> Void) {
-        taskForGetRequest(url: EndPoints.flickrPhotosSearch(lat, lon).url, responseType: FlickrSearchResponse.self) { (response, error) in
+        search(lat: lat, lon: lon, page: 1, completion: completion)
+    }
+        
+    class func search(lat: Double, lon: Double, page: Int, completion: @escaping ([URL], Error?) -> Void) {
+        taskForGetRequest(url: EndPoints.flickrPhotosSearch(lat, lon, page).url, responseType: FlickrSearchResponse.self) { (response, error) in
             if error != nil {
                 completion([], error)
             }

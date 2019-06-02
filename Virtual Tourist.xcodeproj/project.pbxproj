@@ -12,6 +12,11 @@
 		4405488C229FDDDA0046F06A /* FlickrErrorResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4405488B229FDDDA0046F06A /* FlickrErrorResponse.swift */; };
 		4405488F229FDFB40046F06A /* FlickrSearchResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4405488E229FDFB40046F06A /* FlickrSearchResponse.swift */; };
 		4405489122A1B7C30046F06A /* PhotoCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4405489022A1B7C30046F06A /* PhotoCollectionViewCell.swift */; };
+		4405489322A1D0FE0046F06A /* VTAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4405489222A1D0FE0046F06A /* VTAnnotation.swift */; };
+		4405489522A3D9170046F06A /* Pin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4405489422A3D9170046F06A /* Pin.swift */; };
+		4405489722A3DCAF0046F06A /* Photo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4405489622A3DCAF0046F06A /* Photo.swift */; };
+		4405489A22A3DDF90046F06A /* UIExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4405489922A3DDF90046F06A /* UIExtensions.swift */; };
+		4405489C22A404530046F06A /* LazyImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4405489B22A404530046F06A /* LazyImageView.swift */; };
 		443100B32289893300AD3332 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 443100B22289893300AD3332 /* AppDelegate.swift */; };
 		443100B52289893300AD3332 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 443100B42289893300AD3332 /* MapViewController.swift */; };
 		443100B82289893300AD3332 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 443100B62289893300AD3332 /* Main.storyboard */; };
@@ -30,6 +35,11 @@
 		4405488B229FDDDA0046F06A /* FlickrErrorResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlickrErrorResponse.swift; sourceTree = "<group>"; };
 		4405488E229FDFB40046F06A /* FlickrSearchResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlickrSearchResponse.swift; sourceTree = "<group>"; };
 		4405489022A1B7C30046F06A /* PhotoCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCollectionViewCell.swift; sourceTree = "<group>"; };
+		4405489222A1D0FE0046F06A /* VTAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VTAnnotation.swift; sourceTree = "<group>"; };
+		4405489422A3D9170046F06A /* Pin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pin.swift; sourceTree = "<group>"; };
+		4405489622A3DCAF0046F06A /* Photo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Photo.swift; sourceTree = "<group>"; };
+		4405489922A3DDF90046F06A /* UIExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIExtensions.swift; sourceTree = "<group>"; };
+		4405489B22A404530046F06A /* LazyImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LazyImageView.swift; sourceTree = "<group>"; };
 		443100AF2289893300AD3332 /* Virtual Tourist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Virtual Tourist.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		443100B22289893300AD3332 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		443100B42289893300AD3332 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
@@ -74,6 +84,15 @@
 			path = Response;
 			sourceTree = "<group>";
 		};
+		4405489822A3DDCF0046F06A /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				4405489922A3DDF90046F06A /* UIExtensions.swift */,
+				4405489222A1D0FE0046F06A /* VTAnnotation.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		443100A62289893300AD3332 = {
 			isa = PBXGroup;
 			children = (
@@ -100,6 +119,7 @@
 				445DF29322993AA600D627C5 /* Views */,
 				445DF29122993A9A00D627C5 /* Assets */,
 				445DF29222993A9D00D627C5 /* StoryBoards */,
+				4405489822A3DDCF0046F06A /* Extensions */,
 				445DF29722993B5D00D627C5 /* Utilities */,
 			);
 			path = "Virtual Tourist";
@@ -127,6 +147,7 @@
 			isa = PBXGroup;
 			children = (
 				4405489022A1B7C30046F06A /* PhotoCollectionViewCell.swift */,
+				4405489B22A404530046F06A /* LazyImageView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -154,6 +175,8 @@
 		445DF29622993AF300D627C5 /* Managed Object Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				4405489422A3D9170046F06A /* Pin.swift */,
+				4405489622A3DCAF0046F06A /* Photo.swift */,
 			);
 			path = "Managed Object Extensions";
 			sourceTree = "<group>";
@@ -239,17 +262,22 @@
 			buildActionMask = 2147483647;
 			files = (
 				445DF29E22994B3900D627C5 /* DataController.swift in Sources */,
+				4405489322A1D0FE0046F06A /* VTAnnotation.swift in Sources */,
 				445DF2992299476700D627C5 /* Extensions.swift in Sources */,
 				443100B52289893300AD3332 /* MapViewController.swift in Sources */,
 				445DF28C229887A600D627C5 /* PhotoCollectionViewController.swift in Sources */,
 				44054888229FD92D0046F06A /* WebAPIClient.swift in Sources */,
 				4405489122A1B7C30046F06A /* PhotoCollectionViewCell.swift in Sources */,
+				4405489522A3D9170046F06A /* Pin.swift in Sources */,
 				443100B32289893300AD3332 /* AppDelegate.swift in Sources */,
+				4405489722A3DCAF0046F06A /* Photo.swift in Sources */,
 				4405488F229FDFB40046F06A /* FlickrSearchResponse.swift in Sources */,
+				4405489A22A3DDF90046F06A /* UIExtensions.swift in Sources */,
 				4405488C229FDDDA0046F06A /* FlickrErrorResponse.swift in Sources */,
 				445DF28E22988F6F00D627C5 /* Constants.swift in Sources */,
 				445DF29C22994A8C00D627C5 /* Model.xcdatamodeld in Sources */,
 				4405488A229FDBBB0046F06A /* FlickrClient.swift in Sources */,
+				4405489C22A404530046F06A /* LazyImageView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
