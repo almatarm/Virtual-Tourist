@@ -11,7 +11,10 @@ import MapKit
 import CoreData
 
 class PhotoCollectionViewController: UIViewController {
-
+    enum UIEvent {
+        case beginLoadingImages, endLoadingImages, beginLoadingNewImage, endLoadingNewImage
+    }
+    
     //MARK: Outlets
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var collectionView: UICollectionView!
@@ -28,6 +31,8 @@ class PhotoCollectionViewController: UIViewController {
     var pinHasPhotos: Bool {
         return (fetchResultsController.fetchedObjects?.count ?? 0) > 0
     }
+    var numberOfImagesCurrentlyLoading = 0
+    var deletingAllImagesInProgress = false
     
     //MARK: Lifecycle methods
     override func viewDidLoad() {
@@ -41,7 +46,6 @@ class PhotoCollectionViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setupFlowLayout()
-        updatingUI(loading: true)
         setupFetchResultsController()
     }
     
@@ -70,7 +74,7 @@ class PhotoCollectionViewController: UIViewController {
         let width = UIDevice.current.orientation.isPortrait ? min(view.frame.size.height, view.frame.size.width) :
             max(view.frame.size.height, view.frame.size.width)
         let cellCount: CGFloat = UIDevice.current.orientation.isPortrait ? 3.0 : 5.0
-        let space: CGFloat = cellCount
+        let space: CGFloat = cellCount * 2
         let dimension = (width - ((cellCount - 1) * space)) / cellCount
         
         flowLayout.minimumInteritemSpacing = space
@@ -79,34 +83,72 @@ class PhotoCollectionViewController: UIViewController {
     }
     
     @IBAction func newCollection(_ sender: Any) {
-//        FlickrClient.search(lat: pin.latitude, lon: pin.longitude) { photos, error in
-//            self.photos.removeAll()
-//            for photo in photos {
-//                self.photos.append(photo)
-//            }
-//            print(self.photos)
-//            self.collectionView.reloadData()
-//        }
+        // Get Photos form flicker
+        updateUI(event: .beginLoadingImages)
+        if pinHasPhotos {
+            deleteCurrentCollection()
+        }
+        FlickrClient.search(lat: pin.latitude, lon: pin.longitude, page: pageNumber) { urls, error in
+            for url in urls {
+                let photo = Photo(context: self.viewContext)
+                photo.link = url
+                photo.pin = self.pin
+            }
+//            try? self.viewContext.save()
+            self.pageNumber += 1
+            self.collectionView.reloadData()
+            self.updateUI(event: .endLoadingImages)
+        }
     }
     
-    func fetchNewCollection() {
-        updatingUI(loading: true)
-        
-        
-        updatingUI(loading: false)
+    func deleteCurrentCollection() {
+        deletingAllImagesInProgress = true
+        for photo in fetchResultsController.fetchedObjects! {
+            viewContext.delete(photo)
+        }
+        try? viewContext.save()
+        collectionView.reloadData()
+        deletingAllImagesInProgress = false
     }
 
-    func updatingUI(loading: Bool) {
-        newCollection.isEnabled = loading == false
-        
-        if loading {
+    func updateUI(event: UIEvent) {
+        switch(event) {
+        case .beginLoadingImages:
+            newCollection.isEnabled = false
             activityIndicator.startAnimating()
-        } else {
+            break
+        case .endLoadingImages:
+            newCollection.isEnabled = true
             activityIndicator.stopAnimating()
+            try? viewContext.save()
+            noImageLabel.isHidden = pinHasPhotos
+            print("--- .endLoadingImages")
+            break
+        case .beginLoadingNewImage:
+            numberOfImagesCurrentlyLoading += 1
+            print("+ numberOfImagesCurrentlyLoading", numberOfImagesCurrentlyLoading)
+            updateUI(event: .beginLoadingImages)
+            break
+        case .endLoadingNewImage:
+            numberOfImagesCurrentlyLoading -= 1
+            print("- numberOfImagesCurrentlyLoading", numberOfImagesCurrentlyLoading)
+            printObjects()
+            if numberOfImagesCurrentlyLoading == 0 {
+                updateUI(event: .endLoadingImages)
+            }
+            break
+        }
+    }
+    
+    func printObjects() {
+        for photo in fetchResultsController.fetchedObjects! {
+            print("** ", photo.link)
         }
     }
     
     fileprivate func setupFetchResultsController() {
+        updateUI(event: .beginLoadingImages)
+        
         let fetchRequest: NSFetchRequest<Photo> = Photo.fetchRequest()
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending:  false)]
         fetchRequest.predicate = NSPredicate(format: "pin == %@", pin)
@@ -115,24 +157,16 @@ class PhotoCollectionViewController: UIViewController {
         fetchResultsController.delegate = self
         do {
             try fetchResultsController.performFetch()
+            updateUI(event: .endLoadingImages)
+            
             if !pinHasPhotos {
-                // Get Photos form flicker
-                FlickrClient.search(lat: pin.latitude, lon: pin.longitude, page: pageNumber) { urls, error in
-                    for url in urls {
-                        let photo = Photo(context: self.viewContext)
-                        photo.link = url
-                        photo.pin = self.pin
-                    }
-                    try? self.viewContext.save()
-                    self.pageNumber += 1
-                    self.collectionView.reloadData()
-                }
+                newCollection(self)
             }
         } catch {
             fatalError("Could not fetch photos from local store: \(error.localizedDescription)")
         }
         
-        updatingUI(loading: false)
+//        updatingUI(loading: false)
     }
     
     //MARK: Delegate methods
@@ -149,10 +183,20 @@ extension PhotoCollectionViewController: UICollectionViewDelegate, UICollectionV
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoCollectionViewController.CellIdentifier, for: indexPath) as! PhotoCollectionViewCell
         
         let photo = fetchResultsController.object(at: indexPath)
-        cell.photo.setPhoto(newPhoto: photo)
+        updateUI(event: .beginLoadingNewImage)
+        cell.photo.setPhoto(newPhoto: photo) {
+            DispatchQueue.main.async {
+                self.updateUI(event: .endLoadingNewImage)
+            }
+        }
         return cell
     }
     
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let photo = fetchResultsController.object(at: indexPath)
+        viewContext.delete(photo)
+        try? viewContext.save()
+    }
     
 }
 
@@ -161,11 +205,25 @@ extension PhotoCollectionViewController : NSFetchedResultsControllerDelegate {
         
         switch(type) {
         case .insert:
+//            print("Controller: Insert")
             if let indexPath = indexPath {
                 collectionView.insertItems(at: [indexPath])
             }
+        case .delete:
+//            print("Controller: Delete")
+            if let indexPath = indexPath, !deletingAllImagesInProgress {
+                collectionView.deleteItems(at: [indexPath])
+            }
+        case .move:
+//            print("Controller: Move")
+            break
+        case .update:
+//            print("Controller: Update")
+            break
+            
         default:
             break
         }
+        
     }
 }

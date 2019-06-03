@@ -33,10 +33,10 @@
 ~~The specifics of storing an image is left to Core Data by activating the “Allows External Storage” option.~~
 
 ## Once all images have been downloaded, can the user remove photos from the album by tapping the image in the collection view? ##
-Once all images have been downloaded, the user can remove photos from the album by tapping the image in the collection view. Tapping the image removes it from the photo album, the booth in the collection view, and Core Data.
+~~Once all images have been downloaded, the user can remove photos from the album by tapping the image in the collection view. Tapping the image removes it from the photo album, the booth in the collection view, and Core Data.~~
 
 ## Does the Photo Album view have a button that allows the user to replace the images in a photo album with a new set of images downloaded from Flickr? ##
-The Photo Album view has a button that initiates the download of a new album, replacing the images in the photo album with a new set from Flickr. The new set should contain different images (if available) from the ones previously displayed. One way this can be achieved is by specifying a random value for the page parameter when making the request.
+~~The Photo Album view has a button that initiates the download of a new album, replacing the images in the photo album with a new set from Flickr. The new set should contain different images (if available) from the ones previously displayed. One way this can be achieved is by specifying a random value for the page parameter when making the request.~~
 
 ## If the Photo Album view is opened for a pin that already has photos, are they immediately displayed? ##
-~~If the Photo Album view is opened for a pin that previously had photos assigned, they are immediately displayed. No new download is needed.~~
+~~If the Photo Album view is opened for a pin that previously had photos assigned, they are immediately displayed. No new download is needed.~~ 

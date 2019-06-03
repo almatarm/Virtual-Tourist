@@ -20,7 +20,7 @@ struct FlickrPhoto: Codable{
     let isfamily: Int
     
     var url : URL {
-        return URL(string: "https://farm\(farm).staticflickr.com/\(server)/\(id)_\(secret)_c.jpg")!
+        return URL(string: "https://farm\(farm).staticflickr.com/\(server)/\(id)_\(secret)_t.jpg")!
     }
 }
 
