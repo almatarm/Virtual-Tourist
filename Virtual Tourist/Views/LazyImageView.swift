@@ -32,14 +32,12 @@ class LazyImageView : UIImageView {
     
     func loadImage(completion: (() -> Void)?) {
         updatingUI(loading: true)
-        print("loading image")
         self.image = nil
         //Do we have a stored image
         if let imageData = photo.getImageData() {
             self.image = imageData
             updatingUI(loading: false)
             completion?()
-            print("image loading from store")
             return
         }
         
@@ -49,17 +47,15 @@ class LazyImageView : UIImageView {
                 self.updatingUI(loading: false)
                 guard let data = data, error == nil else { return }
                 DispatchQueue.main.async() {
-                    self.image = UIImage(data: data)
-                    self.photo.setImageData(image: self.image!)
-                    try? self.photo.managedObjectContext?.save()
+                    let newImage = UIImage(data: data)
+                    self.image = newImage
+                    self.photo.setImageData(image: newImage!)
                     completion?()
-                    print("image loaded from fliker")
                 }
             }
         } else {
             updatingUI(loading: false)
             completion?()
-            print("no image loaded")
         }
     }
     

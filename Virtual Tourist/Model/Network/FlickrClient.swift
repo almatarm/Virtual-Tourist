@@ -23,7 +23,7 @@ class FlickrClient {
         var urlString : String {
             switch self {
             case .flickrPhotosSearch(let lat, let lon, let page):
-                return "\(EndPoints.base)method=flickr.photos.search&api_key=\(Auth.key)&lat=\(lat)&lon=\(lon)&format=json&nojsoncallback=1&per_page=2&page=\(page)"
+                return "\(EndPoints.base)method=flickr.photos.search&api_key=\(Auth.key)&lat=\(lat)&lon=\(lon)&format=json&nojsoncallback=1&per_page=13&page=\(page)"
             }
         }
         
@@ -55,7 +55,6 @@ class FlickrClient {
     }
     
     class func search(lat: Double, lon: Double, page: Int, completion: @escaping ([URL], Error?) -> Void) {
-        print("Search", lat, lon, page)
         taskForGetRequest(url: EndPoints.flickrPhotosSearch(lat, lon, page).url, responseType: FlickrSearchResponse.self) { (response, error) in
             if error != nil {
                 completion([], error)

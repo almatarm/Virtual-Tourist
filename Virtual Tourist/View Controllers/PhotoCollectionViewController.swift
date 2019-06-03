@@ -28,8 +28,8 @@ class PhotoCollectionViewController: UIViewController {
     var fetchResultsController:NSFetchedResultsController<Photo>!
     var pageNumber = 1
     var viewContext: NSManagedObjectContext!
-    var pinHasPhotos: Bool {
-        return (fetchResultsController.fetchedObjects?.count ?? 0) > 0
+    var havePhotos: Bool {
+        return (fetchResultsController?.fetchedObjects?.count ?? 0) > 0
     }
     var numberOfImagesCurrentlyLoading = 0
     var deletingAllImagesInProgress = false
@@ -51,6 +51,7 @@ class PhotoCollectionViewController: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        try? viewContext.save()
         fetchResultsController = nil
     }
     
@@ -85,16 +86,16 @@ class PhotoCollectionViewController: UIViewController {
     @IBAction func newCollection(_ sender: Any) {
         // Get Photos form flicker
         updateUI(event: .beginLoadingImages)
-        if pinHasPhotos {
+        if havePhotos {
             deleteCurrentCollection()
         }
+        
         FlickrClient.search(lat: pin.latitude, lon: pin.longitude, page: pageNumber) { urls, error in
             for url in urls {
                 let photo = Photo(context: self.viewContext)
                 photo.link = url
                 photo.pin = self.pin
             }
-//            try? self.viewContext.save()
             self.pageNumber += 1
             self.collectionView.reloadData()
             self.updateUI(event: .endLoadingImages)
@@ -120,29 +121,19 @@ class PhotoCollectionViewController: UIViewController {
         case .endLoadingImages:
             newCollection.isEnabled = true
             activityIndicator.stopAnimating()
+            noImageLabel.isHidden = havePhotos
             try? viewContext.save()
-            noImageLabel.isHidden = pinHasPhotos
-            print("--- .endLoadingImages")
             break
         case .beginLoadingNewImage:
             numberOfImagesCurrentlyLoading += 1
-            print("+ numberOfImagesCurrentlyLoading", numberOfImagesCurrentlyLoading)
             updateUI(event: .beginLoadingImages)
             break
         case .endLoadingNewImage:
             numberOfImagesCurrentlyLoading -= 1
-            print("- numberOfImagesCurrentlyLoading", numberOfImagesCurrentlyLoading)
-            printObjects()
             if numberOfImagesCurrentlyLoading == 0 {
                 updateUI(event: .endLoadingImages)
             }
             break
-        }
-    }
-    
-    func printObjects() {
-        for photo in fetchResultsController.fetchedObjects! {
-            print("** ", photo.link)
         }
     }
     
@@ -159,7 +150,7 @@ class PhotoCollectionViewController: UIViewController {
             try fetchResultsController.performFetch()
             updateUI(event: .endLoadingImages)
             
-            if !pinHasPhotos {
+            if !havePhotos {
                 newCollection(self)
             }
         } catch {
@@ -205,22 +196,13 @@ extension PhotoCollectionViewController : NSFetchedResultsControllerDelegate {
         
         switch(type) {
         case .insert:
-//            print("Controller: Insert")
             if let indexPath = indexPath {
                 collectionView.insertItems(at: [indexPath])
             }
         case .delete:
-//            print("Controller: Delete")
             if let indexPath = indexPath, !deletingAllImagesInProgress {
                 collectionView.deleteItems(at: [indexPath])
             }
-        case .move:
-//            print("Controller: Move")
-            break
-        case .update:
-//            print("Controller: Update")
-            break
-            
         default:
             break
         }

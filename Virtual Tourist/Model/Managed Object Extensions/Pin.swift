@@ -25,4 +25,8 @@ extension Pin {
             longitude = newValue.longitude
         }
     }
+    
+    func equalsTo(coordinate: CLLocationCoordinate2D) -> Bool {
+        return coordinate.latitude == latitude && coordinate.longitude == longitude
+    }
 }

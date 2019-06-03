@@ -10,7 +10,7 @@ import UIKit
 import MapKit
 import CoreData
 
-class MapViewController: UIViewController, UIGestureRecognizerDelegate {
+class MapViewController: UIViewController, UIGestureRecognizerDelegate, NSFetchedResultsControllerDelegate {
     
     //MARK: Outlets
     @IBOutlet weak var mapView: MKMapView!
@@ -20,15 +20,14 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate {
     var viewContext: NSManagedObjectContext {
         return dataController.viewContext
     }
-    var pins: [Pin] = []
-
+    var fetchResultsController:NSFetchedResultsController<Pin>!
+    
     //MARK: Lifecycle methods
     override func viewDidLoad() {
         super.viewDidLoad()
         mapView.delegate = self
         
         setupMapLongPressGesture()
-        setupFetchRequest()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -37,11 +36,13 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate {
         if let region_array = UserDefaults.standard.value(forKey: Constants.MAP_REGION) as? [Double] {
             mapView.setRegion(MKCoordinateRegion.deserialize(region_array), animated:  true)
         }
+        setupFetchResultsController()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
+        fetchResultsController = nil
     }
     
     //MARK: Private methods
@@ -51,10 +52,13 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate {
         mapView.addGestureRecognizer(tapGesture)
     }
     
-    fileprivate func setupFetchRequest() {
+    fileprivate func setupFetchResultsController() {
         let pinFetchRequest:NSFetchRequest<Pin> = Pin.fetchRequest()
+        pinFetchRequest.sortDescriptors = [ NSSortDescriptor(key: "creationDate", ascending: false)]
+        fetchResultsController = NSFetchedResultsController(fetchRequest: pinFetchRequest, managedObjectContext: viewContext, sectionNameKeyPath: nil, cacheName: nil)
+        fetchResultsController.delegate = self
         do {
-            self.pins = try viewContext.fetch(pinFetchRequest)
+            try fetchResultsController.performFetch()
             refresh()
         } catch {
             alert(message: error.localizedDescription, title: "Loading Pins")
@@ -63,6 +67,7 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate {
     
     func refresh() {
         mapView.removeAnnotations(mapView.annotations)
+        guard let pins = fetchResultsController.fetchedObjects else {return}
         for pin in pins {
             addAnnotation(pin: pin)
         }
@@ -90,6 +95,10 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate {
         addAnnotation(pin: pin)
     }
     
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        refresh()
+    }
+    
 }
 
 //MARK: Extensions - MapView Delegate
@@ -112,9 +121,14 @@ extension MapViewController: MKMapViewDelegate {
     }
     
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+        try? viewContext.save()
+        let pin = fetchResultsController.fetchedObjects?.filter {
+            $0.equalsTo(coordinate: view.annotation!.coordinate)
+        }.first!
         let photoCollectionVC = self.storyboard?.instantiateViewController(withIdentifier: "PhotoCollectionViewController") as! PhotoCollectionViewController
-        photoCollectionVC.pin = (view.annotation as? VTAnnotation)?.pin
+        photoCollectionVC.pin = pin //(view.annotation as? VTAnnotation)?.pin
         photoCollectionVC.viewContext = viewContext
+        try? viewContext.save()
         self.navigationController?.pushViewController(photoCollectionVC, animated: true)
     }
     
