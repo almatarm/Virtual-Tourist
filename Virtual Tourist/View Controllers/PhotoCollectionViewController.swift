@@ -27,7 +27,9 @@ class PhotoCollectionViewController: UIViewController {
     var pin: Pin!
     var fetchResultsController:NSFetchedResultsController<Photo>!
     var pageNumber = 1
-    var viewContext: NSManagedObjectContext!
+    var viewContext: NSManagedObjectContext {
+        return DataController.shared.viewContext
+    }
     var havePhotos: Bool {
         return (fetchResultsController?.fetchedObjects?.count ?? 0) > 0
     }

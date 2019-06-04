@@ -13,15 +13,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-    let dataController = DataController(modelName: "Model")
+    let dataController = DataController.shared
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         checkIfFirstLaunch()
         
         dataController.load()
         
-        let mapViewController = getMainViewController() as! MapViewController
-        mapViewController.dataController = dataController
+//        let mapViewController = getMainViewController() as! MapViewController
+//        mapViewController.dataController = dataController
         
         return true
     }

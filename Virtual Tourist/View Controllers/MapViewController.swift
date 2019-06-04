@@ -16,11 +16,12 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, NSFetche
     @IBOutlet weak var mapView: MKMapView!
     
     //MARK: Variables/Constants
-    var dataController:DataController!
+    var dataController:DataController = DataController.shared
     var viewContext: NSManagedObjectContext {
         return dataController.viewContext
     }
     var fetchResultsController:NSFetchedResultsController<Pin>!
+    var lastAddedAnnotation: MKPointAnnotation?
     
     //MARK: Lifecycle methods
     override func viewDidLoad() {
@@ -91,8 +92,17 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, NSFetche
         let location = gestureReconizer.location(in: mapView)
         let coordinate = mapView.convert(location,toCoordinateFrom: mapView)
         
-        let pin = addPin(coordinate: coordinate)
-        addAnnotation(pin: pin)
+        if gestureReconizer.state == .began {
+            lastAddedAnnotation = MKPointAnnotation()
+            lastAddedAnnotation?.coordinate = coordinate
+            mapView.addAnnotation(lastAddedAnnotation!)
+        } else if gestureReconizer.state == .changed {
+            lastAddedAnnotation?.coordinate = coordinate
+        } else if gestureReconizer.state == .ended {
+            mapView.removeAnnotation(lastAddedAnnotation!)
+            let pin = addPin(coordinate: coordinate)
+            addAnnotation(pin: pin)
+        }
     }
     
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
@@ -127,7 +137,6 @@ extension MapViewController: MKMapViewDelegate {
         }.first!
         let photoCollectionVC = self.storyboard?.instantiateViewController(withIdentifier: "PhotoCollectionViewController") as! PhotoCollectionViewController
         photoCollectionVC.pin = pin //(view.annotation as? VTAnnotation)?.pin
-        photoCollectionVC.viewContext = viewContext
         try? viewContext.save()
         self.navigationController?.pushViewController(photoCollectionVC, animated: true)
     }

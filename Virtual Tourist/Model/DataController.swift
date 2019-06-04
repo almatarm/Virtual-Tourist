@@ -10,6 +10,7 @@ import Foundation
 import CoreData
 
 class DataController {
+    static let shared = DataController(modelName: "Model")
     
     let persistentContainer:NSPersistentContainer
     
@@ -17,7 +18,7 @@ class DataController {
         return persistentContainer.viewContext
     }
     
-    init(modelName: String) {
+    private init(modelName: String) {
         persistentContainer = NSPersistentContainer(name: modelName)
     }
     
