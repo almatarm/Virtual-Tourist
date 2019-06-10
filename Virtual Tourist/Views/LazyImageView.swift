@@ -11,16 +11,7 @@ import UIKit
 
 class LazyImageView : UIImageView {
     private var photo:Photo!
-//    {
-//        didSet {
-//            loadImage()
-//        }
-//    }
-//
-//    func setPhoto(newPhoto: Photo) {
-//        photo = (photo == nil ? newPhoto : photo)
-//    }
-//
+
     func setPhoto(newPhoto: Photo, completion: (() -> Void)?) {
         if photo == nil || photo.link != newPhoto.link {
             photo = newPhoto

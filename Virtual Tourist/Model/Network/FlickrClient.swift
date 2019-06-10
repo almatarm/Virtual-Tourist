@@ -62,7 +62,7 @@ class FlickrClient {
             
             var urls : [URL] = []
             for photo in (response?.photos.photo)! {
-                urls.append(photo.url)
+                urls.append(photo.url())
             }
             completion(urls, nil)
         }

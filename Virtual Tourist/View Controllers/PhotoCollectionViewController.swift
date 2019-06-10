@@ -187,8 +187,9 @@ extension PhotoCollectionViewController: UICollectionViewDelegate, UICollectionV
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let photo = fetchResultsController.object(at: indexPath)
-        viewContext.delete(photo)
-        try? viewContext.save()
+        let imageViewController = self.storyboard?.instantiateViewController(withIdentifier: "ImageViewController") as! ImageViewController
+        imageViewController.photo = photo
+        self.navigationController?.pushViewController(imageViewController, animated: true)
     }
     
 }

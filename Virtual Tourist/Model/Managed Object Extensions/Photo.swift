@@ -23,6 +23,12 @@ extension Photo {
     func getImageData() -> UIImage? {
         return imageData == nil ? nil: UIImage(data: imageData!)
     }
-    
+
+    func getDifferentSize(size: PhotoSize) -> URL? {
+        if var linkStr = link?.absoluteString {
+            return URL(string:linkStr.slice(from: 0, to: linkStr.count - 5) + size.rawValue + ".jpg")
+        }
+        return nil
+    }
     
 }
