@@ -95,7 +95,11 @@
                                     <constraint firstAttribute="height" constant="44" id="4LU-2Y-QZv"/>
                                 </constraints>
                                 <items>
-                                    <barButtonItem title="Delete Pin" id="6xs-nY-t8U"/>
+                                    <barButtonItem title="Delete Pin" id="6xs-nY-t8U">
+                                        <connections>
+                                            <action selector="deletePin:" destination="Qe3-5l-GOw" id="cia-LH-yCJ"/>
+                                        </connections>
+                                    </barButtonItem>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="hyJ-EK-KC2"/>
                                     <barButtonItem title="Get Photos" id="HVh-Oa-2eg">
                                         <connections>

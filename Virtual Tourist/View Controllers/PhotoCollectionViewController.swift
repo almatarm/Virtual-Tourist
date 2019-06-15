@@ -154,6 +154,12 @@ class PhotoCollectionViewController: UIViewController {
         self.navigationController?.pushViewController(photoPickerVC, animated: true)
     }
     
+    @IBAction func deletePin(_ sender: Any) {
+        deletingAllImagesInProgress = true
+        viewContext.delete(pin)
+        try? viewContext.save()
+        self.navigationController?.popViewController(animated: true)
+    }
     //MARK: Delegate methods
 }
 
