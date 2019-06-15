@@ -21,12 +21,15 @@ class PhotoCollectionViewController: UIViewController {
     @IBOutlet weak var noImageLabel: UILabel!
     @IBOutlet weak var flowLayout: UICollectionViewFlowLayout!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
-    @IBOutlet weak var newCollection: UIBarButtonItem!
+    @IBOutlet weak var nextCollection: UIBarButtonItem!
+    @IBOutlet weak var prevCollection: UIBarButtonItem!
+    @IBOutlet weak var pageLabel: UILabel!
     
     //MARK: Variables/Constants
     var pin: Pin!
     var fetchResultsController:NSFetchedResultsController<Photo>!
-    var pageNumber = 1
+    var pageNumber = 0
+    var pageCount = 0
     var viewContext: NSManagedObjectContext {
         return DataController.shared.viewContext
     }
@@ -85,7 +88,18 @@ class PhotoCollectionViewController: UIViewController {
         flowLayout.itemSize = CGSize(width: dimension, height: dimension)
     }
     
-    @IBAction func newCollection(_ sender: Any) {
+    
+    @IBAction func nextCollection(_ sender: Any) {
+        pageNumber += 1
+        newCollection()
+    }
+    
+    @IBAction func prevCollection(_ sender: Any) {
+        pageNumber -= 1
+        newCollection()
+    }
+    
+    func newCollection() {
         // Get Photos form flicker
         updateUI(event: .beginLoadingImages)
         if havePhotos {
@@ -100,7 +114,8 @@ class PhotoCollectionViewController: UIViewController {
                 photo.link = url
                 photo.pin = self.pin
             }
-            self.pageNumber += 1
+            self.pageNumber = searchResult?.page ?? 0
+            self.pageCount = searchResult?.pages ?? 0
             self.collectionView.reloadData()
             self.updateUI(event: .endLoadingImages)
         }
@@ -119,12 +134,16 @@ class PhotoCollectionViewController: UIViewController {
     func updateUI(event: UIEvent) {
         switch(event) {
         case .beginLoadingImages:
-            newCollection.isEnabled = false
+            nextCollection.isEnabled = false
             activityIndicator.startAnimating()
             break
         case .endLoadingImages:
-            newCollection.isEnabled = true
+            nextCollection.isEnabled = true
             activityIndicator.stopAnimating()
+            pageLabel.text = "\(pageNumber)/\(pageCount)"
+            print(pageNumber, pageCount, pageNumber < pageCount)
+            nextCollection.isEnabled = pageNumber < pageCount
+            prevCollection.isEnabled = pageNumber > 1
             noImageLabel.isHidden = havePhotos
             try? viewContext.save()
             break
@@ -155,7 +174,7 @@ class PhotoCollectionViewController: UIViewController {
             updateUI(event: .endLoadingImages)
             
             if !havePhotos {
-                newCollection(self)
+                newCollection()
             }
         } catch {
             fatalError("Could not fetch photos from local store: \(error.localizedDescription)")
