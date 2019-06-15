@@ -54,17 +54,24 @@ class FlickrClient {
         return data
     }
     
-    class func search(lat: Double, lon: Double, page: Int, completion: @escaping ([URL], Error?) -> Void) {
+    class func search(lat: Double, lon: Double, page: Int, completion: @escaping (SearchResult?, Error?) -> Void) {
         taskForGetRequest(url: EndPoints.flickrPhotosSearch(lat, lon, page).url, responseType: FlickrSearchResponse.self) { (response, error) in
-            if error != nil {
-                completion([], error)
+                if error != nil {
+                completion(nil, error)
             }
             
             var urls : [URL] = []
             for photo in (response?.photos.photo)! {
                 urls.append(photo.url())
             }
-            completion(urls, nil)
+            
+            let searchResult = SearchResult(
+                page: response?.photos.page ?? 0,
+                pages: response?.photos.pages ?? 0,
+                perpage: response?.photos.perpage ?? 0,
+                total: Int(response?.photos.total ?? "0")!,
+                photos: urls)
+            completion(searchResult, nil)
         }
     }
 }

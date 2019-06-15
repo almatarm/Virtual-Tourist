@@ -29,6 +29,7 @@
 		445DF29E22994B3900D627C5 /* DataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 445DF29D22994B3900D627C5 /* DataController.swift */; };
 		44ED8DC722AEBAFB008C32B8 /* ImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44ED8DC622AEBAFB008C32B8 /* ImageViewController.swift */; };
 		44ED8DC922AEC718008C32B8 /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44ED8DC822AEC718008C32B8 /* StringExtensions.swift */; };
+		44ED8DCB22AFBED0008C32B8 /* FlickerPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44ED8DCA22AFBED0008C32B8 /* FlickerPage.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -56,6 +57,7 @@
 		445DF29D22994B3900D627C5 /* DataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataController.swift; sourceTree = "<group>"; };
 		44ED8DC622AEBAFB008C32B8 /* ImageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewController.swift; sourceTree = "<group>"; };
 		44ED8DC822AEC718008C32B8 /* StringExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringExtensions.swift; sourceTree = "<group>"; };
+		44ED8DCA22AFBED0008C32B8 /* FlickerPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlickerPage.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,6 +86,7 @@
 			children = (
 				4405488B229FDDDA0046F06A /* FlickrErrorResponse.swift */,
 				4405488E229FDFB40046F06A /* FlickrSearchResponse.swift */,
+				44ED8DCA22AFBED0008C32B8 /* FlickerPage.swift */,
 			);
 			path = Response;
 			sourceTree = "<group>";
@@ -284,6 +287,7 @@
 				445DF28E22988F6F00D627C5 /* Constants.swift in Sources */,
 				445DF29C22994A8C00D627C5 /* Model.xcdatamodeld in Sources */,
 				4405488A229FDBBB0046F06A /* FlickrClient.swift in Sources */,
+				44ED8DCB22AFBED0008C32B8 /* FlickerPage.swift in Sources */,
 				4405489C22A404530046F06A /* LazyImageView.swift in Sources */,
 				44ED8DC922AEC718008C32B8 /* StringExtensions.swift in Sources */,
 			);

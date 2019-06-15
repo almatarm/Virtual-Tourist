@@ -92,7 +92,9 @@ class PhotoCollectionViewController: UIViewController {
             deleteCurrentCollection()
         }
         
-        FlickrClient.search(lat: pin.latitude, lon: pin.longitude, page: pageNumber) { urls, error in
+        FlickrClient.search(lat: pin.latitude, lon: pin.longitude, page: pageNumber) { searchResult, error in
+            guard let urls = searchResult?.photos else { return }
+            print(searchResult  )
             for url in urls {
                 let photo = Photo(context: self.viewContext)
                 photo.link = url
