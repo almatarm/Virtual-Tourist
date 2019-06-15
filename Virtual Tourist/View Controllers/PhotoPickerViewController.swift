@@ -1,30 +1,34 @@
 //
-//  PhotoCollectionViewController.swift
+//  PhotoPickerViewController.swift
 //  Virtual Tourist
 //
-//  Created by Mufeed AlMatar on 24/05/2019.
+//  Created by Mufeed AlMatar on 15/06/2019.
 //  Copyright © 2019 Mufeed AlMatar. All rights reserved.
 //
 
 import UIKit
-import MapKit
 import CoreData
 
-class PhotoCollectionViewController: UIViewController {
+class PhotoPickerViewController: UIViewController {
+
     enum UIEvent {
         case beginLoadingImages, endLoadingImages, beginLoadingNewImage, endLoadingNewImage
     }
     
     //MARK: Outlets
-    @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var noImageLabel: UILabel!
     @IBOutlet weak var flowLayout: UICollectionViewFlowLayout!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    @IBOutlet weak var nextCollection: UIBarButtonItem!
+    @IBOutlet weak var prevCollection: UIBarButtonItem!
+    @IBOutlet weak var pageLabel: UILabel!
     
     //MARK: Variables/Constants
     var pin: Pin!
     var fetchResultsController:NSFetchedResultsController<Photo>!
+    var pageNumber = 0
+    var pageCount = 0
     var viewContext: NSManagedObjectContext {
         return DataController.shared.viewContext
     }
@@ -39,8 +43,6 @@ class PhotoCollectionViewController: UIViewController {
         super.viewDidLoad()
         collectionView.dataSource = self
         collectionView.delegate = self
-        
-        setupMapView()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -60,15 +62,6 @@ class PhotoCollectionViewController: UIViewController {
         super.viewWillTransition(to: size, with: coordinator)
         setupFlowLayout()
     }
-		
-    //MARK: Private methods
-    fileprivate func setupMapView() {
-        let region = MKCoordinateRegion(center: pin.coordinate, latitudinalMeters: CLLocationDistance(exactly: 7500)!, longitudinalMeters: CLLocationDistance(exactly: 7500)!)
-        mapView.setRegion(mapView.regionThatFits(region), animated: false)
-        let annotation = MKPointAnnotation()
-        annotation.coordinate = pin.coordinate
-        mapView.addAnnotation(annotation)
-    }
     
     func setupFlowLayout() {
         // show 3 cells in portrait and 5 in landscape mode
@@ -83,19 +76,62 @@ class PhotoCollectionViewController: UIViewController {
         flowLayout.itemSize = CGSize(width: dimension, height: dimension)
     }
     
+    
+    @IBAction func nextCollection(_ sender: Any) {
+        pageNumber += 1
+        newCollection()
+    }
+    
+    @IBAction func prevCollection(_ sender: Any) {
+        pageNumber -= 1
+        newCollection()
+    }
+    
+    func newCollection() {
+        // Get Photos form flicker
+        updateUI(event: .beginLoadingImages)
+        if havePhotos {
+            deleteCurrentCollection()
+        }
+        
+        FlickrClient.search(lat: pin.latitude, lon: pin.longitude, page: pageNumber) { searchResult, error in
+            guard let urls = searchResult?.photos else { return }
+            print(searchResult  )
+            for url in urls {
+                let photo = Photo(context: self.viewContext)
+                photo.link = url
+                photo.pin = self.pin
+            }
+            self.pageNumber = searchResult?.page ?? 0
+            self.pageCount = searchResult?.pages ?? 0
+            self.collectionView.reloadData()
+            self.updateUI(event: .endLoadingImages)
+        }
+    }
+    
+    func deleteCurrentCollection() {
+        deletingAllImagesInProgress = true
+        for photo in fetchResultsController.fetchedObjects! {
+            viewContext.delete(photo)
+        }
+        try? viewContext.save()
+        collectionView.reloadData()
+        deletingAllImagesInProgress = false
+    }
+    
     func updateUI(event: UIEvent) {
         switch(event) {
         case .beginLoadingImages:
-//            nextCollection.isEnabled = false
+            nextCollection.isEnabled = false
             activityIndicator.startAnimating()
             break
         case .endLoadingImages:
-//            nextCollection.isEnabled = true
+            nextCollection.isEnabled = true
             activityIndicator.stopAnimating()
-//            pageLabel.text = "\(pageNumber)/\(pageCount)"
-//            print(pageNumber, pageCount, pageNumber < pageCount)
-//            nextCollection.isEnabled = pageNumber < pageCount
-//            prevCollection.isEnabled = pageNumber > 1
+            pageLabel.text = "\(pageNumber)/\(pageCount)"
+            print(pageNumber, pageCount, pageNumber < pageCount)
+            nextCollection.isEnabled = pageNumber < pageCount
+            prevCollection.isEnabled = pageNumber > 1
             noImageLabel.isHidden = havePhotos
             try? viewContext.save()
             break
@@ -126,39 +162,20 @@ class PhotoCollectionViewController: UIViewController {
             updateUI(event: .endLoadingImages)
             
             if !havePhotos {
-                shouldGetPhotos()
+                newCollection()
             }
         } catch {
             fatalError("Could not fetch photos from local store: \(error.localizedDescription)")
         }
-    }
-    
-    func shouldGetPhotos() {
-        let getPhotosAlert = UIAlertController(title: "Get Photos", message: "No saved images in this location. get new photos?", preferredStyle: UIAlertController.Style.alert)
         
-        getPhotosAlert.addAction(UIAlertAction(title: "Yes", style: .default, handler: { (action: UIAlertAction!) in
-            self.getPhotos()
-        }))
-        
-        getPhotosAlert.addAction(UIAlertAction(title: "No", style: .cancel, handler: { (action: UIAlertAction!) in
-            print("Handle Cancel Logic here")
-        }))
-        
-        present(getPhotosAlert, animated: true, completion: nil)
-    }
-    
-    @IBAction func getPhotos() {
-        let photoPickerVC = self.storyboard?.instantiateViewController(withIdentifier: "PhotoPickerViewController") as! PhotoPickerViewController
-        photoPickerVC.pin = pin //(view.annotation as? VTAnnotation)?.pin
-//        try? viewContext.save()
-        self.navigationController?.pushViewController(photoPickerVC, animated: true)
+        //        updatingUI(loading: false)
     }
     
     //MARK: Delegate methods
 }
 
 //MARK: Extensions
-extension PhotoCollectionViewController: UICollectionViewDelegate, UICollectionViewDataSource {
+extension PhotoPickerViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     static let CellIdentifier = "PhotoCollectionCellIdentifier"
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return fetchResultsController.fetchedObjects?.count ?? 0
@@ -186,7 +203,7 @@ extension PhotoCollectionViewController: UICollectionViewDelegate, UICollectionV
     
 }
 
-extension PhotoCollectionViewController : NSFetchedResultsControllerDelegate {
+extension PhotoPickerViewController : NSFetchedResultsControllerDelegate {
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
         
         switch(type) {
