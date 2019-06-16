@@ -175,7 +175,8 @@ extension PhotoCollectionViewController: UICollectionViewDelegate, UICollectionV
         
         let photo = fetchResultsController.object(at: indexPath)
         updateUI(event: .beginLoadingNewImage)
-        cell.photo.setPhoto(newPhoto: photo) {
+        cell.photo.photo = photo
+        cell.photo.loadImage() {
             DispatchQueue.main.async {
                 self.updateUI(event: .endLoadingNewImage)
             }

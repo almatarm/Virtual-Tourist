@@ -60,17 +60,12 @@ class FlickrClient {
                 completion(nil, error)
             }
             
-            var urls : [URL] = []
-            for photo in (response?.photos.photo)! {
-                urls.append(photo.url())
-            }
-            
             let searchResult = SearchResult(
                 page: response?.photos.page ?? 0,
                 pages: response?.photos.pages ?? 0,
                 perpage: response?.photos.perpage ?? 0,
                 total: Int(response?.photos.total ?? "0")!,
-                photos: urls)
+                photos: response?.photos.photo ?? [])
             completion(searchResult, nil)
         }
     }

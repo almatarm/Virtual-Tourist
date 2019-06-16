@@ -10,29 +10,22 @@ import UIKit
 
 class ImageViewController: UIViewController {
 
-    @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet weak var imageView: LazyImageView!
 
-    var photo: Photo!
-    
+    var flickrPhoto: FlickrPhoto?
+    var photo: Photo?
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let url = photo.getDifferentSize(size: .meidum_800)
-        getData(from: url!) { data, response, error in
-            guard let data = data, error == nil else { return }
-            DispatchQueue.main.async() {
-                let newImage = UIImage(data: data)
-                self.imageView.image = newImage
-            }
+        imageView.url = flickrPhoto?.url(size: .meidum_800)
+        imageView.photo = photo
+        imageView.loadImage() {
+            
         }
     }
     
     @IBAction func saveImage(_ sender: Any) {
         
     }
-    
-    func getData(from url: URL, completion: @escaping (Data?, URLResponse?, Error?) -> ()) {
-        URLSession.shared.dataTask(with: url, completionHandler: completion).resume()
-    }
-    
 }

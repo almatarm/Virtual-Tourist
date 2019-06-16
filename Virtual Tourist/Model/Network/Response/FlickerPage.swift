@@ -13,5 +13,5 @@ struct SearchResult {
     let pages: Int
     let perpage: Int
     let total: Int
-    let photos: [URL]
+    let photos: [FlickrPhoto]
 }

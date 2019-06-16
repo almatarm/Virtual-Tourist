@@ -10,22 +10,23 @@ import Foundation
 import UIKit
 
 class LazyImageView : UIImageView {
-    private var photo:Photo!
-
-    func setPhoto(newPhoto: Photo, completion: (() -> Void)?) {
-        if photo == nil || photo.link != newPhoto.link {
-            photo = newPhoto
-            loadImage(completion: completion)
-        } else {
-            completion?()
-        }
-    }
+    var photo:Photo?
+    var url:URL?
+    
+//    func setPhoto(newPhoto: Photo, completion: (() -> Void)?) {
+//        if photo == nil || photo.link != newPhoto.link {
+//            photo = newPhoto
+//            loadImage(completion: completion)
+//        } else {
+//            completion?()
+//        }
+//    }
     
     func loadImage(completion: (() -> Void)?) {
         updatingUI(loading: true)
         self.image = nil
         //Do we have a stored image
-        if let imageData = photo.getImageData() {
+        if let imageData = photo?.getImageData() {
             self.image = imageData
             updatingUI(loading: false)
             completion?()
@@ -33,14 +34,14 @@ class LazyImageView : UIImageView {
         }
         
         //load image form flicker
-        if let url = photo.link {
+        if let url = url {
             getData(from: url) { data, response, error in
                 self.updatingUI(loading: false)
                 guard let data = data, error == nil else { return }
                 DispatchQueue.main.async() {
                     let newImage = UIImage(data: data)
                     self.image = newImage
-                    self.photo.setImageData(image: newImage!)
+//                    self.photo.setImageData(image: newImage!)
                     completion?()
                 }
             }

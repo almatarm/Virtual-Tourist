@@ -26,17 +26,15 @@ class PhotoPickerViewController: UIViewController {
     
     //MARK: Variables/Constants
     var pin: Pin!
-    var fetchResultsController:NSFetchedResultsController<Photo>!
     var pageNumber = 0
     var pageCount = 0
+    var photos: [FlickrPhoto] = []
     var viewContext: NSManagedObjectContext {
         return DataController.shared.viewContext
     }
-    var havePhotos: Bool {
-        return (fetchResultsController?.fetchedObjects?.count ?? 0) > 0
-    }
     var numberOfImagesCurrentlyLoading = 0
     var deletingAllImagesInProgress = false
+    
     
     //MARK: Lifecycle methods
     override func viewDidLoad() {
@@ -48,13 +46,12 @@ class PhotoPickerViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setupFlowLayout()
-        setupFetchResultsController()
+        newCollection()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         try? viewContext.save()
-        fetchResultsController = nil
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -90,33 +87,18 @@ class PhotoPickerViewController: UIViewController {
     func newCollection() {
         // Get Photos form flicker
         updateUI(event: .beginLoadingImages)
-        if havePhotos {
-            deleteCurrentCollection()
-        }
+        photos.removeAll()
         
         FlickrClient.search(lat: pin.latitude, lon: pin.longitude, page: pageNumber) { searchResult, error in
-            guard let urls = searchResult?.photos else { return }
-            print(searchResult  )
-            for url in urls {
-                let photo = Photo(context: self.viewContext)
-                photo.link = url
-                photo.pin = self.pin
+            guard let flikerPhotos = searchResult?.photos else { return }
+            for flickrPhoto in flikerPhotos {
+                self.photos.append(flickrPhoto)
             }
             self.pageNumber = searchResult?.page ?? 0
             self.pageCount = searchResult?.pages ?? 0
             self.collectionView.reloadData()
             self.updateUI(event: .endLoadingImages)
         }
-    }
-    
-    func deleteCurrentCollection() {
-        deletingAllImagesInProgress = true
-        for photo in fetchResultsController.fetchedObjects! {
-            viewContext.delete(photo)
-        }
-        try? viewContext.save()
-        collectionView.reloadData()
-        deletingAllImagesInProgress = false
     }
     
     func updateUI(event: UIEvent) {
@@ -132,7 +114,7 @@ class PhotoPickerViewController: UIViewController {
             print(pageNumber, pageCount, pageNumber < pageCount)
             nextCollection.isEnabled = pageNumber < pageCount
             prevCollection.isEnabled = pageNumber > 1
-            noImageLabel.isHidden = havePhotos
+//            noImageLabel.isHidden = havePhotos
             try? viewContext.save()
             break
         case .beginLoadingNewImage:
@@ -147,30 +129,7 @@ class PhotoPickerViewController: UIViewController {
             break
         }
     }
-    
-    fileprivate func setupFetchResultsController() {
-        updateUI(event: .beginLoadingImages)
-        
-        let fetchRequest: NSFetchRequest<Photo> = Photo.fetchRequest()
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending:  false)]
-        fetchRequest.predicate = NSPredicate(format: "pin == %@", pin)
-        
-        fetchResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: viewContext, sectionNameKeyPath: nil, cacheName: nil)
-        fetchResultsController.delegate = self
-        do {
-            try fetchResultsController.performFetch()
-            updateUI(event: .endLoadingImages)
-            
-            if !havePhotos {
-                newCollection()
-            }
-        } catch {
-            fatalError("Could not fetch photos from local store: \(error.localizedDescription)")
-        }
-        
-        //        updatingUI(loading: false)
-    }
-    
+
     //MARK: Delegate methods
 }
 
@@ -178,15 +137,16 @@ class PhotoPickerViewController: UIViewController {
 extension PhotoPickerViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     static let CellIdentifier = "PhotoCollectionCellIdentifier"
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return fetchResultsController.fetchedObjects?.count ?? 0
+        return photos.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoCollectionViewController.CellIdentifier, for: indexPath) as! PhotoCollectionViewCell
         
-        let photo = fetchResultsController.object(at: indexPath)
+        let photo = photos[indexPath.row]
         updateUI(event: .beginLoadingNewImage)
-        cell.photo.setPhoto(newPhoto: photo) {
+        cell.photo.url = photo.url(size: .thumbnail)
+        cell.photo.loadImage() {
             DispatchQueue.main.async {
                 self.updateUI(event: .endLoadingNewImage)
             }
@@ -195,29 +155,10 @@ extension PhotoPickerViewController: UICollectionViewDelegate, UICollectionViewD
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let photo = fetchResultsController.object(at: indexPath)
+        let photo = photos[indexPath.row]
         let imageViewController = self.storyboard?.instantiateViewController(withIdentifier: "ImageViewController") as! ImageViewController
-        imageViewController.photo = photo
+        imageViewController.flickrPhoto = photo
         self.navigationController?.pushViewController(imageViewController, animated: true)
     }
     
-}
-
-extension PhotoPickerViewController : NSFetchedResultsControllerDelegate {
-    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
-        
-        switch(type) {
-        case .insert:
-            if let indexPath = indexPath {
-                collectionView.insertItems(at: [indexPath])
-            }
-        case .delete:
-            if let indexPath = indexPath, !deletingAllImagesInProgress {
-                collectionView.deleteItems(at: [indexPath])
-            }
-        default:
-            break
-        }
-        
-    }
 }
