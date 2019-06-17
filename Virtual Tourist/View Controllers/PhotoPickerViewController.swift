@@ -111,7 +111,6 @@ class PhotoPickerViewController: UIViewController {
             nextCollection.isEnabled = true
             activityIndicator.stopAnimating()
             pageLabel.text = "\(pageNumber)/\(pageCount)"
-            print(pageNumber, pageCount, pageNumber < pageCount)
             nextCollection.isEnabled = pageNumber < pageCount
             prevCollection.isEnabled = pageNumber > 1
 //            noImageLabel.isHidden = havePhotos
@@ -155,9 +154,10 @@ extension PhotoPickerViewController: UICollectionViewDelegate, UICollectionViewD
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let photo = photos[indexPath.row]
+        let flickrPhoto = photos[indexPath.row]
         let imageViewController = self.storyboard?.instantiateViewController(withIdentifier: "ImageViewController") as! ImageViewController
-        imageViewController.flickrPhoto = photo
+        imageViewController.flickrPhoto = flickrPhoto
+        imageViewController.pin = pin
         self.navigationController?.pushViewController(imageViewController, animated: true)
     }
     

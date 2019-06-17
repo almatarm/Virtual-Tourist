@@ -167,10 +167,15 @@
                                     <constraint firstAttribute="height" constant="44" id="M9X-bM-efu"/>
                                 </constraints>
                                 <items>
-                                    <barButtonItem width="42" style="plain" systemItem="fixedSpace" id="Ybi-cR-428"/>
                                     <barButtonItem systemItem="save" id="kx7-EU-Cf8">
                                         <connections>
                                             <action selector="saveImage:" destination="4gb-v1-iAP" id="GyD-sL-Mho"/>
+                                        </connections>
+                                    </barButtonItem>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="DdE-xf-fxm"/>
+                                    <barButtonItem systemItem="trash" id="ptd-um-ak1">
+                                        <connections>
+                                            <action selector="deleteImage:" destination="4gb-v1-iAP" id="dP5-Cu-3ev"/>
                                         </connections>
                                     </barButtonItem>
                                 </items>
@@ -189,7 +194,9 @@
                         <viewLayoutGuide key="safeArea" id="fc8-0V-X1c"/>
                     </view>
                     <connections>
+                        <outlet property="deleteButton" destination="ptd-um-ak1" id="vDJ-ih-4rp"/>
                         <outlet property="imageView" destination="5hc-3y-hD4" id="Vb6-bf-Ze8"/>
+                        <outlet property="saveButton" destination="kx7-EU-Cf8" id="F4N-Tj-n2l"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3iW-uq-kja" userLabel="First Responder" sceneMemberID="firstResponder"/>
