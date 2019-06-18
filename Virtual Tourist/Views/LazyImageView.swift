@@ -58,7 +58,7 @@ class LazyImageView : UIImageView {
     lazy var activityIndicator: UIActivityIndicatorView = {
         let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
         activityIndicator.center = self.center
-        activityIndicator.color = .black
+        activityIndicator.color = .gray
         activityIndicator.hidesWhenStopped = true
         self.addSubview(activityIndicator)
         return activityIndicator

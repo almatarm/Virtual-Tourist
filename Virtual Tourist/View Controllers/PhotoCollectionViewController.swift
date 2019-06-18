@@ -33,6 +33,7 @@ class PhotoCollectionViewController: UIViewController {
     }
     var numberOfImagesCurrentlyLoading = 0
     var deletingAllImagesInProgress = false
+    var didShowEmptyPhotoForwardAlert = false
     
     //MARK: Lifecycle methods
     override func viewDidLoad() {
@@ -114,8 +115,7 @@ class PhotoCollectionViewController: UIViewController {
     
     fileprivate func setupFetchResultsController() {
         updateUI(event: .beginLoadingImages)
-        
-        let fetchRequest: NSFetchRequest<Photo> = Photo.fetchRequest()
+         let fetchRequest: NSFetchRequest<Photo> = Photo.fetchRequest()
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending:  false)]
         fetchRequest.predicate = NSPredicate(format: "pin == %@", pin)
         
@@ -125,6 +125,7 @@ class PhotoCollectionViewController: UIViewController {
             try fetchResultsController.performFetch()
             updateUI(event: .endLoadingImages)
             
+            fetchResultsController.delegate?.controllerDidChangeContent?(fetchResultsController as! NSFetchedResultsController<NSFetchRequestResult>)
             if !havePhotos {
                 shouldGetPhotos()
             }
@@ -134,6 +135,10 @@ class PhotoCollectionViewController: UIViewController {
     }
     
     func shouldGetPhotos() {
+        if didShowEmptyPhotoForwardAlert {
+            return
+        }
+        
         let getPhotosAlert = UIAlertController(title: "Get Photos", message: "No saved images in this location. get new photos?", preferredStyle: UIAlertController.Style.alert)
         
         getPhotosAlert.addAction(UIAlertAction(title: "Yes", style: .default, handler: { (action: UIAlertAction!) in
@@ -141,10 +146,11 @@ class PhotoCollectionViewController: UIViewController {
         }))
         
         getPhotosAlert.addAction(UIAlertAction(title: "No", style: .cancel, handler: { (action: UIAlertAction!) in
-            print("Handle Cancel Logic here")
+            
         }))
         
         present(getPhotosAlert, animated: true, completion: nil)
+        didShowEmptyPhotoForwardAlert = true
     }
     
     @IBAction func getPhotos() {
@@ -167,7 +173,7 @@ class PhotoCollectionViewController: UIViewController {
 extension PhotoCollectionViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     static let CellIdentifier = "PhotoCollectionCellIdentifier"
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return fetchResultsController.fetchedObjects?.count ?? 0
+        return fetchResultsController?.fetchedObjects?.count ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -209,5 +215,9 @@ extension PhotoCollectionViewController : NSFetchedResultsControllerDelegate {
             break
         }
         
+    }
+    
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        collectionView.reloadData()
     }
 }

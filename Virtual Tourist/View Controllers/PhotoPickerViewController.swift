@@ -29,29 +29,23 @@ class PhotoPickerViewController: UIViewController {
     var pageNumber = 0
     var pageCount = 0
     var photos: [FlickrPhoto] = []
-    var viewContext: NSManagedObjectContext {
-        return DataController.shared.viewContext
+    var havePhotos: Bool {
+        return photos.count > 0
     }
     var numberOfImagesCurrentlyLoading = 0
     var deletingAllImagesInProgress = false
-    
     
     //MARK: Lifecycle methods
     override func viewDidLoad() {
         super.viewDidLoad()
         collectionView.dataSource = self
         collectionView.delegate = self
+        newCollection()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setupFlowLayout()
-        newCollection()
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        try? viewContext.save()
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -110,11 +104,9 @@ class PhotoPickerViewController: UIViewController {
         case .endLoadingImages:
             nextCollection.isEnabled = true
             activityIndicator.stopAnimating()
-            pageLabel.text = "\(pageNumber)/\(pageCount)"
             nextCollection.isEnabled = pageNumber < pageCount
             prevCollection.isEnabled = pageNumber > 1
-//            noImageLabel.isHidden = havePhotos
-            try? viewContext.save()
+            noImageLabel.isHidden = havePhotos
             break
         case .beginLoadingNewImage:
             numberOfImagesCurrentlyLoading += 1
@@ -122,6 +114,9 @@ class PhotoPickerViewController: UIViewController {
             break
         case .endLoadingNewImage:
             numberOfImagesCurrentlyLoading -= 1
+            nextCollection.isEnabled = pageNumber < pageCount
+            prevCollection.isEnabled = pageNumber > 1
+            pageLabel.text = "\(pageNumber)/\(pageCount)"
             if numberOfImagesCurrentlyLoading == 0 {
                 updateUI(event: .endLoadingImages)
             }

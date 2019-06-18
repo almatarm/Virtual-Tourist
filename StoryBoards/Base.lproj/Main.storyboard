@@ -108,9 +108,9 @@
                                     </barButtonItem>
                                 </items>
                             </toolbar>
-                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No Image Found!" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6RW-oS-LAO">
-                                <rect key="frame" x="77.5" y="317" width="220.5" height="33.5"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="28"/>
+                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No Saved Images Found!" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6RW-oS-LAO">
+                                <rect key="frame" x="60" y="320.5" width="255" height="26.5"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="22"/>
                                 <color key="textColor" red="1" green="0.14913141730000001" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -167,13 +167,13 @@
                                     <constraint firstAttribute="height" constant="44" id="M9X-bM-efu"/>
                                 </constraints>
                                 <items>
-                                    <barButtonItem systemItem="save" id="kx7-EU-Cf8">
+                                    <barButtonItem enabled="NO" systemItem="save" id="kx7-EU-Cf8">
                                         <connections>
                                             <action selector="saveImage:" destination="4gb-v1-iAP" id="GyD-sL-Mho"/>
                                         </connections>
                                     </barButtonItem>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="DdE-xf-fxm"/>
-                                    <barButtonItem systemItem="trash" id="ptd-um-ak1">
+                                    <barButtonItem enabled="NO" systemItem="trash" id="ptd-um-ak1">
                                         <connections>
                                             <action selector="deleteImage:" destination="4gb-v1-iAP" id="dP5-Cu-3ev"/>
                                         </connections>

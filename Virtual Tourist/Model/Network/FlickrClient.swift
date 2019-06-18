@@ -23,7 +23,7 @@ class FlickrClient {
         var urlString : String {
             switch self {
             case .flickrPhotosSearch(let lat, let lon, let page):
-                return "\(EndPoints.base)method=flickr.photos.search&api_key=\(Auth.key)&lat=\(lat)&lon=\(lon)&format=json&nojsoncallback=1&per_page=13&page=\(page)"
+                return "\(EndPoints.base)method=flickr.photos.search&api_key=\(Auth.key)&lat=\(lat)&lon=\(lon)&format=json&nojsoncallback=1&per_page=12&page=\(page)"
             }
         }
         
