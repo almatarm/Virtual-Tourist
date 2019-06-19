@@ -40,6 +40,7 @@ class PhotoPickerViewController: UIViewController {
         super.viewDidLoad()
         collectionView.dataSource = self
         collectionView.delegate = self
+        noImageLabel.text = "No Image Found\nOr\nNetwork is Down!"
         newCollection()
     }
     
